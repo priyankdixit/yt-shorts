@@ -27,6 +27,7 @@ export const uploadShortsAction = async (prevState: UploadShortsState, formData:
         description: formData.get("description") as string,
         video: formData.get("video") as string,
     });
+    console.log("Received video URL:", formData.get("video"));
     if (!result.success) {
         return {
             errors: result.error.flatten().fieldErrors

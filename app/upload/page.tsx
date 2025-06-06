@@ -65,7 +65,7 @@ const page = () => {
             <p className="text-red-600">{formState.errors.formError}</p>
           </div>
         )}
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" disabled={isPending || !videoUrl}>
           {isPending ? <Loader2 className="animate-spin h-4 w-4" /> : "Upload"}
         </Button>
       </form>
