@@ -24,19 +24,28 @@ export default async function Home() {
   }
 
   const shorts = await prisma.shorts.findMany({
-    where: { userId: loggedInUser?.id },
-    include: {
-      user: {
-        select: {
-          name: true,
-          email: true,
-        },
+  select: {
+    id: true,
+    title: true,
+    description: true,
+    url: true,
+    createdAt: true,
+    updateAt: true, 
+    userId: true,  
+    viewsCount: true,
+    user: {
+      select: {
+        name: true,
+        email: true,
       },
     },
-    orderBy:{
-      createdAt:'desc'
-    }
-  });
+  },
+  orderBy: {
+    createdAt: 'desc',
+  },
+});
+
+
 
   return (
     <div className="h-screen overflow-y-scroll snap-y snap-mandatory">
