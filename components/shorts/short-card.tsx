@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import type { Prisma } from "@prisma/client";
 import { Card, CardFooter } from "../ui/card";
 import { IKVideo, ImageKitProvider } from "imagekitio-next";
@@ -20,9 +20,27 @@ type ShortCardProps = {
       };
     };
   }>;
+  isActive: boolean;  // new prop to control play/pause
 };
 
-const ShortCard: React.FC<ShortCardProps> = ({ short }) => {
+const ShortCard: React.FC<ShortCardProps> = ({ short, isActive }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const video = containerRef.current.querySelector("video");
+    if (!video) return;
+
+    if (isActive) {
+      video.play().catch(() => {
+        // autoplay might fail due to browser policies, ignore error
+      });
+    } else {
+      video.pause();
+    }
+  }, [isActive]);
+
   useEffect(() => {
     async function trackView() {
       try {
@@ -41,7 +59,7 @@ const ShortCard: React.FC<ShortCardProps> = ({ short }) => {
   }, [short.id]);
 
   return (
-    <div className="flex max-w-[900px] mx-auto gap-6 p-4">
+    <div ref={containerRef} className="flex max-w-[900px] mx-auto gap-6 p-4">
       {/* Video card */}
       <Card className="p-0 w-[360px] h-[640px] flex flex-col items-center justify-center overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 relative">
         <ImageKitProvider urlEndpoint={urlEndPoint}>

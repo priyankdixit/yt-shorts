@@ -1,13 +1,10 @@
-import ShortCard from "@/components/shorts/short-card";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import ShortsList from "@/components/ShortsList";
 
 export default async function Home() {
   const user = await currentUser();
-
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   const loggedInUser = await prisma.user.findUnique({
     where: { clerkUserId: user.id },
@@ -24,39 +21,26 @@ export default async function Home() {
   }
 
   const shorts = await prisma.shorts.findMany({
-  select: {
-    id: true,
-    title: true,
-    description: true,
-    url: true,
-    createdAt: true,
-    updateAt: true, 
-    userId: true,  
-    viewsCount: true,
-    user: {
-      select: {
-        name: true,
-        email: true,
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      url: true,
+      createdAt: true,
+      updateAt: true,
+      userId: true,
+      viewsCount: true,
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
       },
     },
-  },
-  orderBy: {
-    createdAt: 'desc',
-  },
-});
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-
-
-  return (
-    <div className="h-screen overflow-y-scroll snap-y snap-mandatory">
-      {/* shorts container  */}
-      <div className="flex flex-col items-center">
-        {shorts.map((short) => (
-          <div key={short.id} className="snap-start flex justify-center items-center h-screen">
-            <ShortCard short={short} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  return <ShortsList initialShorts={shorts} />;
 }
