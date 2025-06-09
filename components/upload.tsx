@@ -9,7 +9,8 @@ const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
 
 const authenticator = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/auth");
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const response = await fetch(`${baseUrl}/api/auth`);
 
     if (!response.ok) {
       const errorText = await response.text();
