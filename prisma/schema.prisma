@@ -14,41 +14,30 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  clerkUserId  String   @unique
+  id           String       @id @default(cuid())
+  clerkUserId  String       @unique
   name         String
   email        String
-  createdAt    DateTime @default(now())
-  updateAt     DateTime @updatedAt
+  createdAt    DateTime     @default(now())
+  updateAt     DateTime     @updatedAt
   shorts       Shorts[]
-  comments     Comment[]   // added relation to comments
-  shortViews   ShortView[]  
+  comments     Comment[]
+  shortViews   ShortView[]
 }
 
 model Shorts {
-  id          String    @id @default(cuid())
+  id          String       @id @default(cuid())
   title       String
   description String
   url         String
   userId      String
-   viewsCount  Int        @default(0)
-  createdAt   DateTime  @default(now())
-  updateAt    DateTime  @updatedAt
-  user        User      @relation(fields: [userId], references: [id])
-  comments    Comment[] // added relation to comments
-   views       ShortView[]  // relation to ShortView
-}
+  viewsCount  Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updateAt    DateTime     @updatedAt
 
-model ShortView {
-  id        String   @id @default(cuid())
-  shortId   String
-  userId    String
-  viewedAt  DateTime @default(now())
-
-  short Shorts @relation(fields: [shortId], references: [id])
-  user  User   @relation(fields: [userId], references: [id])
-
-  @@unique([shortId, userId])   // one record per user per short to track last view
+  user        User         @relation(fields: [userId], references: [id])
+  comments    Comment[]    // relation declared without onDelete here
+  views       ShortView[]  // relation declared without onDelete here
 }
 
 model Comment {
@@ -58,6 +47,18 @@ model Comment {
   shortId   String
   userId    String
 
-  short Shorts @relation(fields: [shortId], references: [id])
+  short Shorts @relation(fields: [shortId], references: [id], onDelete: Cascade)
   user  User   @relation(fields: [userId], references: [id])
+}
+
+model ShortView {
+  id        String   @id @default(cuid())
+  shortId   String
+  userId    String
+  viewedAt  DateTime @default(now())
+
+  short Shorts @relation(fields: [shortId], references: [id], onDelete: Cascade)
+  user  User   @relation(fields: [userId], references: [id])
+
+  @@unique([shortId, userId])
 }
